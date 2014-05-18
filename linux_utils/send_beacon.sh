@@ -3,8 +3,6 @@
 # Modified from
 # https://github.com/floe/BTLE/blob/master/bluez_adv.sh
 
-set -vx
-
 ascii2hex() {
   # Outputs the data of a string in a format that
   # hcitool can read. Limits it to 8 characters
