@@ -3,7 +3,10 @@
 #include <BTLE.h>
 #include "printf.h"
 
-RF24 radio(3,4);
+
+// We set the CE pin to 7, which is bogus of course, we actually just 
+// lock it HIGH to save a pin.
+RF24 radio(7,4);
 BTLE btle(&radio);
 
 char NAME[9] = "foobar";
@@ -50,11 +53,12 @@ void loop() {
      Serial.print(" ");
     }
     Serial.println();
+    if (is_my_name()) {
+      Serial.println("My name was in the beacon!");
+    }
   }
-  if (is_my_name()) {
-    Serial.println("My name was in the beacon!");
-  }
-  //Serial.println("done.");
+ 
+  Serial.print(".");
   btle.hopChannel();
 }
 
