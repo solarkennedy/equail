@@ -51,7 +51,7 @@ sudo hcitool -i hci0 cmd 0x08 0x0008  0e  02 01 05  $NAME                    00 
 #sudo hcitool -i hci0 cmd 0x08 0x0008  0e  02 01 05  07 09 66 6f 6f 62 61 72  00 00 00  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
 #sudo hcitool -i hci0 cmd 0x08 0x0008  0e  02 01 05  07 09 66 6f 6f 62 61 72  02 ff fe  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
 
-sleep 2s
+sleep 8s
 
 # disable advertising
 sudo hcitool -i hci0 cmd 0x08 0x000A  00
