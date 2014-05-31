@@ -7,10 +7,6 @@
 #include <avr/power.h>
 #include <avr/wdt.h>
 
-//volatile int f_wdt=1;
-
-
-
 ISR(WDT_vect)
 {
   /*
@@ -25,13 +21,12 @@ ISR(WDT_vect)
   */
 }
 
-
 // We set the CE pin to 7, which is bogus of course, we actually just 
 // lock it HIGH to save a pin.
 RF24 radio(7,4);
 BTLE btle(&radio);
 
-char NAME[9] = "foobar";
+char NAME[9] = "equail";
 
 void setup() {
   
@@ -49,7 +44,7 @@ void setup() {
   /* Enable the WD interrupt (note the reset). */
   WDTCR |=  _BV(WDIE);
   
-  Serial.begin(9600);
+  //Serial.begin(9600);
 //  printf_begin();
   
   btle.begin("");
@@ -75,7 +70,7 @@ void loop() {
      } else if (ret == 1) {
        Serial.println("Got a bad CRC payload                                                              ");
        // don't let bad payloads get us down, give us another try in the next loop
-       count--;
+       count = 0;
      }
      // delay(50);
       if (is_my_name()) {
@@ -132,8 +127,10 @@ void enterSleep(void)
 void activate_output() {
   // This code toggles the output line to make the bird sing
   // LED light up, or whatever
+  pinMode(3, OUTPUT);
   digitalWrite(3, HIGH);
   delay(100);
   digitalWrite(3, LOW);
   delay(100);
+  pinMode(3, INPUT);
 }
