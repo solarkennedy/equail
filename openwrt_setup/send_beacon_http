@@ -1,0 +1,27 @@
+#!/bin/sh
+read request
+while /bin/true;
+do
+read header
+[ "$header" == $'\r' ] && break;
+done
+
+url="${request#GET }"
+url="${url% HTTP/*}"
+url=`echo $url | sed 's/\///'`
+
+response=$(/usr/sbin/send_beacon "$url" 2>&1)
+ret=$?
+length=$(echo $response | wc -c)
+
+if [ $ret -eq 0 ]; then
+  echo HTTP/1.0 200 OK
+else
+  echo HTTP/1.0 500
+fi
+  
+echo "Content-Type: text/html; charset=utf-8"
+echo "Connection: close"
+echo "Content-Length: $length"
+echo
+echo "$response"
