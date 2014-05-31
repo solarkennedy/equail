@@ -1,0 +1,10 @@
+service equail
+{
+ port            = 80
+ socket_type     = stream
+ wait            = no
+ server          = /usr/sbin/send_beacon_http
+ user            = root
+ group           = root
+ type            = UNLISTED
+}
