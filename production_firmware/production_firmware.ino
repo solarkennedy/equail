@@ -44,8 +44,8 @@ void setup() {
   /* Enable the WD interrupt (note the reset). */
   WDTCR |= ~ _BV(WDIE);
   
-  Serial.begin(115200);
-  Serial.println("Powering on...");
+  Serial.begin(9600);
+ // Serial.println("Powering on...");
 //  printf_begin();
   
   btle.begin("");
@@ -75,8 +75,11 @@ void loop() {
      }
      print_destination_addr();
      Serial.println(" !");
-     
-      if (is_my_name()) {
+      int score = name_closeness_score();
+      Serial.print("Name score: ");
+      Serial.println(score);
+      if ( score >= 6) {
+        
         Serial.print("********* Was in the beacon on hop ");
         Serial.print(count);
         Serial.println("******************************");
@@ -114,6 +117,17 @@ bool is_my_name() {
   return true;
 }
 
+int name_closeness_score() {
+  int name_score = 0;
+  for (uint8_t i = 3; i < 11; i++) { 
+    if (btle.buffer.payload[i] == NAME[i-3]) {
+      name_score++;
+    }
+  }
+  return name_score;
+}
+
+
 void print_destination_addr() {
   for (uint8_t i = 3; i < 11; i++) { 
      Serial.print(btle.buffer.payload[i]);
@@ -143,9 +157,7 @@ void activate_output() {
   // This code toggles the output line to make the bird sing
   // LED light up, or whatever
   pinMode(3, OUTPUT);
-  digitalWrite(3, HIGH);
-  delay(100);
-  digitalWrite(3, LOW);
-  delay(100);
+  digitalWrite(3, HIGH); delay(1000);
+  digitalWrite(3, LOW);  delay(1000); 
   pinMode(3, INPUT);
 }
