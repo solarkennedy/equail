@@ -26,7 +26,7 @@ ISR(WDT_vect)
 RF24 radio(7,4);
 BTLE btle(&radio);
 
-char NAME[9] = "equail";
+char NAME[9] = "CALQUAIL";
 
 void setup() {
   
@@ -42,9 +42,10 @@ void setup() {
   /* set new watchdog timeout prescaler value */
   WDTCR = 1<<WDP0 | 1<<WDP3; /* 8.0 seconds */
   /* Enable the WD interrupt (note the reset). */
-  WDTCR |=  _BV(WDIE);
+  WDTCR |= ~ _BV(WDIE);
   
-  //Serial.begin(9600);
+  Serial.begin(115200);
+  Serial.println("Powering on...");
 //  printf_begin();
   
   btle.begin("");
@@ -59,20 +60,22 @@ void loop() {
   // The transmitter is on 3 channels, at 100ms apart.
   // That means we must be listening for 300ms, worst case
   // in order to recieve the beacon
-  for ( int count = 0; count < 80; count++ ) {
-    int ret = btle.listen(5);
+  for ( int count = 0; count < 30; count++ ) {
+    int ret = btle.listen(10);
     // We respond to beacons, even if they don't have a good CRC
     if (ret == 0 || ret == 1) {
-     Serial.print("p");
-     //Serial.println();
+     //Serial.print("p");
+     Serial.println();
      if (ret == 0 ) {
-       Serial.println("Got a Legit payload                                                              ");
+       Serial.print("VALID payload for: ");
      } else if (ret == 1) {
-       Serial.println("Got a bad CRC payload                                                              ");
+       Serial.print("BAD CRC payload for: ");
        // don't let bad payloads get us down, give us another try in the next loop
-       count = 0;
+       //count = 0;
      }
-     // delay(50);
+     print_destination_addr();
+     Serial.println(" !");
+     
       if (is_my_name()) {
         Serial.print("********* Was in the beacon on hop ");
         Serial.print(count);
@@ -82,6 +85,11 @@ void loop() {
         // No need to activate twice
         count = 0;
         enterSleep();
+      } else {
+        Serial.println();
+        Serial.print("Wasn't for me. Was for: ");
+        print_destination_addr();
+        Serial.println();
       }
     } else if (ret == 2) {
       // This indicates the radio had nothing available
@@ -90,6 +98,7 @@ void loop() {
       // This should never happen. The code only returns 0,1,2
       Serial.println("?");
     }
+    btle.hopChannel();
   }
   enterSleep();
 }
@@ -103,6 +112,12 @@ bool is_my_name() {
     }
   }
   return true;
+}
+
+void print_destination_addr() {
+  for (uint8_t i = 3; i < 11; i++) { 
+     Serial.print(btle.buffer.payload[i]);
+  }
 }
 
 void enterSleep(void)

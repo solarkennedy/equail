@@ -10,7 +10,7 @@ ascii2hex() {
   echo -n $1 | awk 'BEGIN{for(n=0;n<256;n++)ord[sprintf("%c",n)]=n}{split($0, chars, ""); for (i=1; i <= 8; i++) { printf( "%x ", ord[chars[i]]) } }'
 }
 
-NAME=`ascii2hex foobar`
+NAME=`ascii2hex $1`
 
 # bring up the host controller if not already
 sudo hciconfig hci0 up
@@ -54,4 +54,4 @@ sudo hcitool -i hci0 cmd 0x08 0x0008  0e  02 01 05  $NAME                    00 
 sleep 8s
 
 # disable advertising
-sudo hcitool -i hci0 cmd 0x08 0x000A  00
+#sudo hcitool -i hci0 cmd 0x08 0x000A  00
