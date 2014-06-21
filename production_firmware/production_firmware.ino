@@ -40,9 +40,12 @@ void setup() {
    */
   WDTCR |= (1<<WDCE) | (1<<WDE);
   /* set new watchdog timeout prescaler value */
-  WDTCR = 1<<WDP0 | 1<<WDP3; /* 8.0 seconds */
+ // WDTCR = 1<<WDP0 | 1<<WDP3; /* 8.0 seconds */
+  //WDTCR  = (0<<WDP3)|(1<<WDP2) | (1<<WDP1);
+  WDTCR |= 7;
+  // WDTCR = 7;
   /* Enable the WD interrupt (note the reset). */
-  WDTCR |= ~ _BV(WDIE);
+  //WDTCR |= _BV(WDIE);
   
   Serial.begin(9600);
  // Serial.println("Powering on...");
@@ -51,7 +54,7 @@ void setup() {
   btle.begin("");
   radio.setPALevel(RF24_PA_MIN);
  // radio.printDetails();
-  Serial.println();
+  //Serial.println();
   pinMode(3, OUTPUT);
 }
 
@@ -60,8 +63,8 @@ void loop() {
   // The transmitter is on 3 channels, at 100ms apart.
   // That means we must be listening for 300ms, worst case
   // in order to recieve the beacon
-  for ( int count = 0; count < 30; count++ ) {
-    int ret = btle.listen(10);
+  for ( int count = 0; count < 25; count++ ) {
+    int ret = btle.listen(5);
     // We respond to beacons, even if they don't have a good CRC
     if (ret == 0 || ret == 1) {
      //Serial.print("p");
@@ -87,6 +90,9 @@ void loop() {
         // If we have been activated, go right back to sleep after resetting the counter
         // No need to activate twice
         count = 0;
+        wdt_disable();
+        delay(10000);
+        wdt_enable(WDTO_2S); 
         enterSleep();
       } else {
         Serial.println();
@@ -138,7 +144,7 @@ void enterSleep(void)
 {
   set_sleep_mode(SLEEP_MODE_PWR_DOWN);
   Serial.println("Now sleeping");
-  Serial.println();
+ // Serial.println();
   radio.powerDown();
   digitalWrite(3, LOW);
   sleep_enable();
@@ -157,7 +163,7 @@ void activate_output() {
   // This code toggles the output line to make the bird sing
   // LED light up, or whatever
   pinMode(3, OUTPUT);
-  digitalWrite(3, HIGH); delay(1000);
-  digitalWrite(3, LOW);  delay(1000); 
+  digitalWrite(3, HIGH); delay(100);
+  digitalWrite(3, LOW);  delay(100); 
   pinMode(3, INPUT);
 }
