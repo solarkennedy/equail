@@ -6,10 +6,10 @@ START=`head /tmp/equail.log | grep -a 'sleeping' | cut -f 1-3 -d ' '  | head -n 
 START_S=`date -d "$START" +%s`
 END=`date +%s`
 
-SECONDS=$(( ($END - $START_S) / 60 ))
+MINUTES=$(( ($END - $START_S) / 60 ))
 
 NUMBER=`grep -a '\*\*\*\*\*' /tmp/equail.log  | wc -l`
 
 echo "scale=10 
-$NUMBER / $SECONDS" | bc
+$NUMBER / $MINUTES" | bc
 
