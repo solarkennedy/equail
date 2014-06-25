@@ -11,14 +11,14 @@ ISR(WDT_vect)
 {
   /*
   if(f_wdt == 0)
-  {
-    f_wdt=1;
-  }
-  else
-  {
-    Serial.println("WDT Overrun!!!");
-  }
-  */
+   {
+   f_wdt=1;
+   }
+   else
+   {
+   Serial.println("WDT Overrun!!!");
+   }
+   */
 }
 
 // We set the CE pin to 7, which is bogus of course, we actually just 
@@ -29,60 +29,61 @@ BTLE btle(&radio);
 char NAME[9] = "CALQUAIL";
 
 void setup() {
-  
+
   // Disabling the ADC saves us ~.300ma in sleep
   ADCSRA = 0;  
-    
+
   /* Clear the reset flag. */
   MCUSR &= ~(1<<WDRF);
   /* In order to change WDE or the prescaler, we need to
    * set WDCE (This will allow updates for 4 clock cycles).
    */
-  WDTCR |= (1<<WDCE) | (1<<WDE);
+  //WDTCR |= (1<<WDCE) | (1<<WDE);
   /* set new watchdog timeout prescaler value */
- // WDTCR = 1<<WDP0 | 1<<WDP3; /* 8.0 seconds */
+  // WDTCR = 1<<WDP0 | 1<<WDP3; /* 8.0 seconds */
   //WDTCR  = (0<<WDP3)|(1<<WDP2) | (1<<WDP1);
-  WDTCR |= 7;
+  //WDTCR |= 7;
   // WDTCR = 7;
-  /* Enable the WD interrupt (note the reset). */
-  //WDTCR |= _BV(WDIE);
-  
-  Serial.begin(9600);
- // Serial.println("Powering on...");
-//  printf_begin();
-  
+
+  // Serial.begin(9600);
+  // Serial.println("Powering on...");
+  //  printf_begin();
+
+  wdt_enable(WDTO_2S); 
+
   btle.begin("");
   radio.setPALevel(RF24_PA_MIN);
- // radio.printDetails();
+  // radio.printDetails();
   //Serial.println();
-  pinMode(3, OUTPUT);
+  //pinMode(3, OUTPUT);
 }
 
 void loop() {
-  
+
   // The transmitter is on 3 channels, at 100ms apart.
   // That means we must be listening for 300ms, worst case
   // in order to recieve the beacon
+  flash();
   for ( int count = 0; count < 25; count++ ) {
     int ret = btle.listen(5);
     // We respond to beacons, even if they don't have a good CRC
     if (ret == 0 || ret == 1) {
-     //Serial.print("p");
-     Serial.println();
-     if (ret == 0 ) {
-       Serial.print("VALID payload for: ");
-     } else if (ret == 1) {
-       Serial.print("BAD CRC payload for: ");
-       // don't let bad payloads get us down, give us another try in the next loop
-       //count = 0;
-     }
-     print_destination_addr();
-     Serial.println(" !");
+      Serial.println();
+      if (ret == 0 ) {
+        Serial.print("VALID payload for: ");
+      } 
+      else if (ret == 1) {
+        Serial.print("BAD CRC payload for: ");
+        // don't let bad payloads get us down, give us another try in the next loop
+        //count = 0;
+      }
+      print_destination_addr();
+      Serial.println(" !");
       int score = name_closeness_score();
       Serial.print("Name score: ");
       Serial.println(score);
       if ( score >= 6) {
-        
+        wdt_reset();
         Serial.print("********* Was in the beacon on hop ");
         Serial.print(count);
         Serial.println("******************************");
@@ -90,25 +91,27 @@ void loop() {
         // If we have been activated, go right back to sleep after resetting the counter
         // No need to activate twice
         count = 0;
-        wdt_disable();
-        delay(10000);
-        wdt_enable(WDTO_2S); 
+        wait_it_out();
         enterSleep();
-      } else {
+      } 
+      else {
         Serial.println();
         Serial.print("Wasn't for me. Was for: ");
         print_destination_addr();
         Serial.println();
       }
-    } else if (ret == 2) {
+    } 
+    else if (ret == 2) {
       // This indicates the radio had nothing available
       Serial.print(".");
-    } else {
+    } 
+    else {
       // This should never happen. The code only returns 0,1,2
       Serial.println("?");
     }
     btle.hopChannel();
   }
+  flash();
   enterSleep();
 }
 
@@ -136,7 +139,7 @@ int name_closeness_score() {
 
 void print_destination_addr() {
   for (uint8_t i = 3; i < 11; i++) { 
-     Serial.print(btle.buffer.payload[i]);
+    Serial.print(btle.buffer.payload[i]);
   }
 }
 
@@ -144,12 +147,12 @@ void enterSleep(void)
 {
   set_sleep_mode(SLEEP_MODE_PWR_DOWN);
   Serial.println("Now sleeping");
- // Serial.println();
+  // Serial.println();
   radio.powerDown();
   digitalWrite(3, LOW);
   sleep_enable();
   sleep_mode();
-  
+
   /* The program will continue from here after the WDT timeout*/
   Serial.println();
   Serial.println("Waking up from sleep");
@@ -162,8 +165,27 @@ void enterSleep(void)
 void activate_output() {
   // This code toggles the output line to make the bird sing
   // LED light up, or whatever
+  wdt_reset();
   pinMode(3, OUTPUT);
-  digitalWrite(3, HIGH); delay(100);
-  digitalWrite(3, LOW);  delay(100); 
+  digitalWrite(3, HIGH); 
+  delay(1000);
   pinMode(3, INPUT);
+  wdt_reset();
 }
+
+void flash() {
+  pinMode(3, OUTPUT);
+  digitalWrite(3, HIGH); 
+  delay(10);
+  pinMode(3, INPUT);
+  delay(10);
+}
+
+void wait_it_out(){
+  for (int c = 0 ; c < 10; c++) {
+    wdt_reset();
+    delay(1000);
+  }
+}
+
+
