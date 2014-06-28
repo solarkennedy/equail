@@ -51,7 +51,7 @@ Wikipedia:
 if [ "$url" == "" ]; then
   echo HTTP/1.0 200 OK
   response=`usage`
-elif ! grep -w "$url" /root/valid_birds ; then
+elif ! grep -q -w "$url" /root/valid_birds ; then
   echo HTTP/1.0 404 Not Found
   response="404: I'm not aware of the bird $url."
 else 

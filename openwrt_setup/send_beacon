@@ -4,11 +4,6 @@
 # https://github.com/floe/BTLE/blob/master/bluez_adv.sh
 set -eu
 
-if ! grep -w "$1" /root/valid_birds ; then
-  echo "$1 is not a valid name"
-  exit 1
-fi
-
 ascii2hex() {
   # Outputs the data of a string in a format that
   # hcitool can read. Limits it to 8 characters
