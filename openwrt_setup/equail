@@ -7,4 +7,7 @@ service equail
  user            = root
  group           = root
  type            = UNLISTED
+ instances       = 1
+ max_load        = 1
+ cps             = 2 1
 }
