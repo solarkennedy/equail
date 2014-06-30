@@ -11,39 +11,35 @@ HEADER="${GET% HTTP/*}"
 url=`echo $HEADER | sed 's/\///'`
 
 usage() {
-echo "== Welcome to the Zookeeeper!
+echo "<h1> Welcome to the Zookeeeper! </h1>
 
 The zookeeper is an http api to send Bluetooth Low Energy beacons to compatible
 plush toys. 
 
-== Usage
+<h2> Usage </h2>
 
 Set your URL to a valid bird. Here is a list of the birds I'm aware of:
 "
-cat /root/valid_birds
+for BIRD in `cat /root/valid_birds`; do
+  echo "<li><a href=/$BIRD>$BIRD</a></li>"
+done
 
 echo -n "
-== Example
+<h2> Example </h2>
 
 Try this in your browser or curl:
 
-    http://"
-
-
-cat /proc/sys/kernel/hostname | tr -d '\n'
-echo -n "/"
-head -n 1 /root/valid_birds
+"
+BIRD=`head -n 1 /root/valid_birds`
+HOST=`cat /proc/sys/kernel/hostname | tr -d '\n'`
+echo "
+    <a href=$BIRD>http://$HOST/$BIRD</a>"
 
 echo "
-== More info:
+<h2> More info: </h2>
 
-Source code:
-
-    https://github.com/solarkennedy/equail
-
-Wikipedia:
-
-    http://en.wikipedia.org/wiki/Bluetooth_low_energy
+<a href=https://github.com/solarkennedy/equail>Source code</a>
+<a href=http://en.wikipedia.org/wiki/Bluetooth_low_energy>Wikipedia on BTLE</a>
 "
 
 }
@@ -51,8 +47,10 @@ Wikipedia:
 if [ "$url" == "" ]; then
   echo HTTP/1.0 200 OK
   response=`usage`
+  echo "Content-Type: text/html; charset=utf-8"
 elif ! grep -q -w "$url" /root/valid_birds ; then
   echo HTTP/1.0 404 Not Found
+  echo "Content-Type: text/plain; charset=utf-8"
   response="404: I'm not aware of the bird $url."
 else 
   response=$(/usr/sbin/send_beacon "$url" 2>&1)
@@ -62,10 +60,10 @@ else
   else
     echo HTTP/1.0 500
   fi
+  echo "Content-Type: text/plain; charset=utf-8"
 fi
   
 length=$(echo "$response" | wc -c)
-echo "Content-Type: text/plain; charset=utf-8"
 echo "Connection: close"
 echo "Content-Length: $length"
 echo
