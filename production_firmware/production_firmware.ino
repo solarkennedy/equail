@@ -26,7 +26,7 @@ ISR(WDT_vect)
 RF24 radio(7,4);
 BTLE btle(&radio);
 
-char NAME[9] = "CALQUAIL";
+char NAME[9] = "MEDOLARK";
 
 void setup() {
 
@@ -63,7 +63,7 @@ void loop() {
   // The transmitter is on 3 channels, at 100ms apart.
   // That means we must be listening for 300ms, worst case
   // in order to recieve the beacon
-  flash();
+  //flash();
   for ( int count = 0; count < 25; count++ ) {
     int ret = btle.listen(5);
     // We respond to beacons, even if they don't have a good CRC
@@ -111,7 +111,7 @@ void loop() {
     }
     btle.hopChannel();
   }
-  flash();
+  //flash();
   enterSleep();
 }
 
