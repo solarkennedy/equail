@@ -115,16 +115,6 @@ void loop() {
   enterSleep();
 }
 
-bool is_my_name() {
-  // Function to determine if the destination section of the payload
-  // matches the NAME const of this device
-  for (uint8_t i = 3; i < 11; i++) { 
-    if (btle.buffer.payload[i] != NAME[i-3]) {
-      return false;
-    }
-  }
-  return true;
-}
 
 int name_closeness_score() {
   int name_score = 0;
