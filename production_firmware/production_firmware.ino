@@ -27,6 +27,7 @@ RF24 radio(7,4);
 BTLE btle(&radio);
 
 char NAME[9] = "MEDOLARK";
+char BROADCAST[9] = "BRODCAST";
 
 void setup() {
 
@@ -35,7 +36,7 @@ void setup() {
 
   /* Clear the reset flag. */
   MCUSR &= ~(1<<WDRF);
-  wdt_enable(WDTO_2S); 
+  wdt_enable(WDTO_2S);
 
   // Serial.begin(9600);
   // Serial.println("Powering on...");
@@ -68,10 +69,13 @@ void loop() {
       }
       print_destination_addr();
       Serial.println(" !");
-      int score = name_closeness_score();
+      int name_score = name_closeness_score();
+      int broadcast_score = name_closeness_score();
       Serial.print("Name score: ");
-      Serial.println(score);
-      if ( score >= 6) {
+      Serial.println(name_score);
+      Serial.print("Broadcast score: ");
+      Serial.println(broadcast_score);
+      if ( name_score >= 6 || broadcast_score >= 6) {
         wdt_reset();
         Serial.print("********* Was in the beacon on hop ");
         Serial.print(count);
@@ -107,6 +111,16 @@ int name_closeness_score() {
   int name_score = 0;
   for (uint8_t i = 3; i < 11; i++) { 
     if (btle.buffer.payload[i] == NAME[i-3]) {
+      name_score++;
+    }
+  }
+  return name_score;
+}
+
+int broadcast_closeness_score() {
+  int name_score = 0;
+  for (uint8_t i = 3; i < 11; i++) { 
+    if (btle.buffer.payload[i] == BROADCAST[i-3]) {
       name_score++;
     }
   }
