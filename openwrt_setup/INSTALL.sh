@@ -12,6 +12,7 @@ wget -O /usr/sbin/send_beacon https://github.com/solarkennedy/equail/raw/master/
 
 # Now setup the xinetd service
 opkg install xinetd
+opkg install coreutils-timeout
 wget -O /usr/sbin/send_beacon_http https://github.com/solarkennedy/equail/raw/master/openwrt_setup/send_beacon_http
 wget -O /etc/xinetd.conf https://github.com/solarkennedy/equail/raw/master/openwrt_setup/xinetd.conf
 wget -O /etc/xinetd.d/equail https://github.com/solarkennedy/equail/raw/master/openwrt_setup/equail

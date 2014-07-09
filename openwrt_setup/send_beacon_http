@@ -53,7 +53,7 @@ elif ! grep -q -w "$url" /root/valid_birds ; then
   echo "Content-Type: text/plain; charset=utf-8"
   response="404: I'm not aware of the bird $url."
 else 
-  response=$(/usr/sbin/send_beacon "$url" 2>&1)
+  response=$(/usr/bin/timeout 15 /usr/sbin/send_beacon "$url" 2>&1)
   ret=$?
   if [ $ret -eq 0 ]; then
     echo HTTP/1.0 200 OK
