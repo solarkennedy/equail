@@ -53,7 +53,6 @@ void loop() {
   // The transmitter is on 3 channels, at 100ms apart.
   // That means we must be listening for 300ms, worst case
   // in order to recieve the beacon
-  //flash();
   for ( int count = 0; count < 25; count++ ) {
     int ret = btle.listen(5);
     // We respond to beacons, even if they don't have a good CRC
@@ -101,10 +100,8 @@ void loop() {
     }
     btle.hopChannel();
   }
-  //flash();
   enterSleep();
 }
-
 
 int name_closeness_score() {
   int name_score = 0;
@@ -115,7 +112,6 @@ int name_closeness_score() {
   }
   return name_score;
 }
-
 
 void print_destination_addr() {
   for (uint8_t i = 3; i < 11; i++) { 
@@ -151,14 +147,6 @@ void activate_output() {
   delay(1000);
   pinMode(3, INPUT);
   wdt_reset();
-}
-
-void flash() {
-  pinMode(3, OUTPUT);
-  digitalWrite(3, HIGH); 
-  delay(10);
-  pinMode(3, INPUT);
-  delay(10);
 }
 
 void wait_it_out(){
