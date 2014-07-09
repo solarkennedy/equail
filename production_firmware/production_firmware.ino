@@ -35,21 +35,11 @@ void setup() {
 
   /* Clear the reset flag. */
   MCUSR &= ~(1<<WDRF);
-  /* In order to change WDE or the prescaler, we need to
-   * set WDCE (This will allow updates for 4 clock cycles).
-   */
-  //WDTCR |= (1<<WDCE) | (1<<WDE);
-  /* set new watchdog timeout prescaler value */
-  // WDTCR = 1<<WDP0 | 1<<WDP3; /* 8.0 seconds */
-  //WDTCR  = (0<<WDP3)|(1<<WDP2) | (1<<WDP1);
-  //WDTCR |= 7;
-  // WDTCR = 7;
+  wdt_enable(WDTO_2S); 
 
   // Serial.begin(9600);
   // Serial.println("Powering on...");
   //  printf_begin();
-
-  wdt_enable(WDTO_2S); 
 
   btle.begin("");
   radio.setPALevel(RF24_PA_MIN);
