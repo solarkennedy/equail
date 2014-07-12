@@ -26,8 +26,8 @@ ISR(WDT_vect)
 RF24 radio(7,4);
 BTLE btle(&radio);
 
-char NAME[9] = "MEDOLARK";
-char BROADCAST[9] = "BRODCAST";
+char NAME[9] = "CalQuail";
+char BROADCAST[9] = "CACOPHON";
 
 void setup() {
 
@@ -70,7 +70,7 @@ void loop() {
       print_destination_addr();
       Serial.println(" !");
       int name_score = name_closeness_score();
-      int broadcast_score = name_closeness_score();
+      int broadcast_score = broadcast_closeness_score();
       Serial.print("Name score: ");
       Serial.println(name_score);
       Serial.print("Broadcast score: ");
