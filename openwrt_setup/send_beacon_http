@@ -1,8 +1,8 @@
 #!/bin/sh
-read request
+read -t 5 request
 while /bin/true;
 do
-read header
+read -t 5 header
 [ "$header" == $'\r' ] && break;
 done
 
