@@ -1,5 +1,5 @@
 # Script to configure Openwrt 
-# Us as much or as little as you want
+# Use as much or as little as you want
 
 # Get openwrt bluetooth aware:
 opkg install kmod-bluetooth
