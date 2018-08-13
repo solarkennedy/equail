@@ -4,8 +4,6 @@
 
 Audubon society plush toys modified to activate on BTLE beacons.
 
-![Equail](http://www.sjdquwf.org/birds86.gif)
-
 ## DEMO
 
 [![youtube video](http://img.youtube.com/vi/A8WPcTgCzXs/0.jpg)](http://www.youtube.com/watch?v=A8WPcTgCzXs)
